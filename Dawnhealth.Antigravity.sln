@@ -5,6 +5,12 @@ VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dawnhealth.Antigravity.Api", "src\Dawnhealth.Antigravity.Api\Dawnhealth.Antigravity.Api.csproj", "{4DE88AA6-4FE2-4733-957E-0E36752D1D24}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dawnhealth.Antigravity.DomainServices", "src\Dawnhealth.Antigravity.DomainServices\Dawnhealth.Antigravity.DomainServices.csproj", "{3DC9568B-233B-4E1F-8ACF-3051CC1B827E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dawnhealth.Antigravity.Domain", "src\Dawnhealth.Antigravity.Domain\Dawnhealth.Antigravity.Domain.csproj", "{34F4DCBA-8737-4731-B3D9-5F9F07B1198E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Downhealth.Antigravity.Infrastructure", "Downhealth.Antigravity.Infrastructure\Downhealth.Antigravity.Infrastructure.csproj", "{13343475-6279-4961-BB90-8EF4E8A060B1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +21,18 @@ Global
 		{4DE88AA6-4FE2-4733-957E-0E36752D1D24}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4DE88AA6-4FE2-4733-957E-0E36752D1D24}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4DE88AA6-4FE2-4733-957E-0E36752D1D24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DC9568B-233B-4E1F-8ACF-3051CC1B827E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DC9568B-233B-4E1F-8ACF-3051CC1B827E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DC9568B-233B-4E1F-8ACF-3051CC1B827E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DC9568B-233B-4E1F-8ACF-3051CC1B827E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34F4DCBA-8737-4731-B3D9-5F9F07B1198E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34F4DCBA-8737-4731-B3D9-5F9F07B1198E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34F4DCBA-8737-4731-B3D9-5F9F07B1198E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34F4DCBA-8737-4731-B3D9-5F9F07B1198E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13343475-6279-4961-BB90-8EF4E8A060B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13343475-6279-4961-BB90-8EF4E8A060B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13343475-6279-4961-BB90-8EF4E8A060B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13343475-6279-4961-BB90-8EF4E8A060B1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
