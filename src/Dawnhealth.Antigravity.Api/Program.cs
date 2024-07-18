@@ -19,7 +19,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddMemoryCache();
+// Configure distributed in-memory cache
+builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddDbContext<ApplicationDbContext>();
 

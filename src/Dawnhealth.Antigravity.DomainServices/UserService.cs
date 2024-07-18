@@ -1,8 +1,10 @@
 ﻿
+using System.Text.Json;
+
 using Dawnhealth.Antigravity.DomainServices;
 
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 
 namespace Dawnhealth.Antigravity.Domain.Users;
@@ -12,12 +14,9 @@ public class UserService : IUserService
     private readonly ILogger<UserService> _logger;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IActivationCodeService _activationCodeService;
+    private readonly IDistributedCache _cache;
 
-    //When running in autoscaling environment, it is important to use distributed cache like Redis
-    //Alternatively, use service bus topic to notify all instances to invalidate cache
-    private readonly IMemoryCache _cache;
-
-    public UserService(ILogger<UserService> logger, UserManager<ApplicationUser> userManager, IActivationCodeService activationCodeService, IMemoryCache cache)
+    public UserService(ILogger<UserService> logger, UserManager<ApplicationUser> userManager, IActivationCodeService activationCodeService, IDistributedCache cache)
     {
         _logger = logger;
         _userManager = userManager;
@@ -57,7 +56,7 @@ public class UserService : IUserService
             _logger.LogWarning("Failed to assign role to user {user}", user.Id);
         }
 
-        InvalidateCache("TestSubject");
+        await InvalidateCacheAsync("TestSubject");
 
         return result;
 
@@ -66,21 +65,25 @@ public class UserService : IUserService
 
     public async Task<IList<ApplicationUser>> GetUsersAsync(string role)
     {
-        // Check if users are already in cache
         var key = "Users" + role;
-        if (_cache.TryGetValue(key, out IList<ApplicationUser>? users) && users != null)
+        var cachedUsers = await _cache.GetStringAsync(key);
+        if (!string.IsNullOrEmpty(cachedUsers))
         {
-            return users;
+            return JsonSerializer.Deserialize<IList<ApplicationUser>>(cachedUsers) ?? [];
         }
 
-        users = await _userManager.GetUsersInRoleAsync(role);
-        _cache.Set(key, users);
+        var users = await _userManager.GetUsersInRoleAsync(role);
+        await _cache.SetStringAsync(key, JsonSerializer.Serialize(users), new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24)
+        });
 
         return users;
     }
 
-    private void InvalidateCache(string role)
+    private async Task InvalidateCacheAsync(string role)
     {
-        _cache.Remove("Users" + role);
+        var key = "Users" + role;
+        await _cache.RemoveAsync(key);
     }
 }
