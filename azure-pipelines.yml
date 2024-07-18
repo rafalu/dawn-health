@@ -1,0 +1,80 @@
+trigger:
+ branches:
+   include:
+     - master
+     - features/*
+
+pool:
+  vmImage: 'ubuntu-latest'
+  
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+  majorMinorVersion: 1.0
+  semanticVersion: $[counter(variables['majorMinorVersion'], 0)]
+
+name: $(majorMinorVersion).$(semanticVersion)
+
+steps:
+- task: UseDotNet@2
+  displayName: 'Install .NET Core SDK'
+  inputs:
+    version: 8.0.x
+    performMultiLevelLookup: true
+    includePreviewVersions: false
+    
+- task: DotNetCoreCLI@2
+  displayName: restore
+  inputs:
+    command: restore
+    projects: '**/*.csproj'
+    verbosityRestore: Minimal
+    vstsFeed: 'company-nugets'
+
+- task: DotNetCoreCLI@2
+  displayName: build
+  inputs:
+    command: build
+    projects: '**/*.csproj'
+    arguments: '--configuration $(buildConfiguration) --no-restore'
+    verbosityRestore: Minimal
+
+- task: DotNetCoreCLI@2
+  displayName: 'test'
+  inputs:
+    command: test
+    configuration: '$(buildConfiguration)'
+    projects: '**/*.Test.csproj'
+    arguments: 
+      -- no-build
+    
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet pack *.Domain'
+  inputs:
+    command: 'pack'
+    packagesToPack: '**/*.Domain.csproj'
+    nobuild: true
+    versioningScheme: byBuildNumber
+    verbosityRestore: Minimal
+
+- task: DotNetCoreCLI@2
+  condition: succeeded()
+  displayName: publish and zip artifacts
+  inputs:
+    command: publish
+    publishWebProjects: false
+    arguments: '--configuration $(buildConfiguration) --no-build --output $(Build.ArtifactStagingDirectory)'
+    packDirectory: '$(Build.ArtifactStagingDirectory)'
+    zipAfterPublish: true
+    projects: |
+      src/**/*.Api.csproj
+      !src/Test/**/*.csproj
+
+- task: PublishBuildArtifacts@1    
+  condition: succeeded()
+  displayName: 'publish zipped artifacts (binaries and sources) to drop folder'
+  inputs:
+    parallel: true
+    parallelCount: 8

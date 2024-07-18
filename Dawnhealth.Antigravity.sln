@@ -13,6 +13,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Downhealth.Antigravity.Infr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dawnhealth.Antigravity.Domain.Public", "Dawnhealth.Antigravity.Domain.Public\Dawnhealth.Antigravity.Domain.Public.csproj", "{8BCCA959-E73E-426B-8D22-C85B6AD1642B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deploy", "Deploy", "{7055B543-394C-4401-84CA-7472A0F38E3D}"
+	ProjectSection(SolutionItems) = preProject
+		azure-pipelines.yml = azure-pipelines.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
