@@ -12,6 +12,9 @@ public class UserService : IUserService
     private readonly ILogger<UserService> _logger;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IActivationCodeService _activationCodeService;
+
+    //When running in autoscaling environment, it is important to use distributed cache like Redis
+    //Alternatively, use service bus topic to notify all instances to invalidate cache
     private readonly IMemoryCache _cache;
 
     public UserService(ILogger<UserService> logger, UserManager<ApplicationUser> userManager, IActivationCodeService activationCodeService, IMemoryCache cache)
