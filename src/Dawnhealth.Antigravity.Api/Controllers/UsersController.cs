@@ -60,6 +60,14 @@ public class UsersController : ControllerBase
         return Created();
     }
 
+    [HttpGet("test-subjects/email")]
+    [AllowAnonymous]
+    public async Task<ActionResult<IEnumerable<string>>> GetEmailsAsync()
+    {
+        var emails = (await _userService.GetUsersAsync("TestSubject")).Select(u => u.Email);
+        return Ok(emails);
+    }
+
     private Task<bool> ValidateActivationCode(UserSignUpRequest request)
     {
         return _activationCodeService.VerifyCodeAsync(request.ActivationCode, request.Email);
