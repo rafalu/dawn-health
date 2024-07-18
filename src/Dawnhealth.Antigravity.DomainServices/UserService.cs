@@ -1,4 +1,6 @@
 ﻿
+using Dawnhealth.Antigravity.DomainServices;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -9,17 +11,30 @@ public class UserService : IUserService
 {
     private readonly ILogger<UserService> _logger;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IActivationCodeService _activationCodeService;
     private readonly IMemoryCache _cache;
 
-    public UserService(ILogger<UserService> logger, UserManager<ApplicationUser> userManager, IMemoryCache cache)
+    public UserService(ILogger<UserService> logger, UserManager<ApplicationUser> userManager, IActivationCodeService activationCodeService, IMemoryCache cache)
     {
         _logger = logger;
         _userManager = userManager;
+        _activationCodeService = activationCodeService;
         _cache = cache;
     }
 
-    public async Task<IdentityResult> CreateAsync(ApplicationUser user, string password)
+    public async Task<IdentityResult> CreateAsync(ApplicationUser user, string password, int activationCode)
     {
+        var valid = await _activationCodeService.VerifyCodeAsync(activationCode, user.Email);
+        if (!valid)
+        {
+            return IdentityResult.Failed(new IdentityError
+            {
+                Code = "InvalidActivationCode",
+                Description = "Invalid activation code"
+            });
+        }
+
+        IdentityResult.Failed(new IdentityError { Code = "InvalidRole", Description = "Invalid role" });
         var result = await _userManager.CreateAsync(user, password);
         if (!result.Succeeded)
         {

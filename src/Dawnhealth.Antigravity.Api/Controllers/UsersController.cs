@@ -15,25 +15,17 @@ public class UsersController : ControllerBase
 {
     private readonly ILogger<UsersController> _logger;
     private readonly IUserService _userService;
-    private readonly IActivationCodeService _activationCodeService;
 
     public UsersController(ILogger<UsersController> logger, IUserService userService, UserManager<ApplicationUser> userManager, RoleManager<ApplicationUser> roleManager, IActivationCodeService activationCodeService)
     {
         _logger = logger;
         _userService = userService;
-        _activationCodeService = activationCodeService;
     }
 
-    [HttpPost("test-subjects")]
+    [HttpPost("test-subjects/sign-up")]
     [AllowAnonymous]
     public async Task<IActionResult> SignUp([FromBody] UserSignUpRequest request)
     {
-        if (!await ValidateActivationCode(request))
-        {
-            ModelState.AddModelError(nameof(UserSignUpRequest.ActivationCode), "Invalid activation code");
-            return BadRequest(ModelState);
-        }
-
         var user = new ApplicationUser
         {
             FirstName = request.FirstName,
@@ -44,7 +36,7 @@ public class UsersController : ControllerBase
 
         try
         {
-            var result = await _userService.CreateAsync(user, request.Password);
+            var result = await _userService.CreateAsync(user, request.Password, request.ActivationCode);
             if (!result.Succeeded)
             {
                 return BadRequest(result.Errors);
@@ -60,16 +52,18 @@ public class UsersController : ControllerBase
         return Created();
     }
 
+    [HttpPost("test-subjects/sign-in")]
+    public Task<IActionResult> SignInAsync([FromBody] SignInRequest request)
+    {
+        //TODO: create JWT token
+        return Task.FromResult<IActionResult>(Ok());
+    }
+
     [HttpGet("test-subjects/email")]
     [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<string>>> GetEmailsAsync()
     {
         var emails = (await _userService.GetUsersAsync("TestSubject")).Select(u => u.Email);
         return Ok(emails);
-    }
-
-    private Task<bool> ValidateActivationCode(UserSignUpRequest request)
-    {
-        return _activationCodeService.VerifyCodeAsync(request.ActivationCode, request.Email);
     }
 }
