@@ -29,11 +29,10 @@ public class ActivationCodeRepository : IActivationCodeRepository
     /// </summary>
     /// <param name="code">Code to verify</param>
     /// <returns>If the activation code exists, return the activation code; otherwise, return null</returns>
-    public Task<ActivationCode?> GeAsync(int code, string email) =>
+    public Task<ActivationCode?> GetAsync(int code, string email) =>
         _context
             .ActivationCodes
             .FirstOrDefaultAsync(x => x.Code == code && x.AssignedToEmail == email);
-
 
     /// <summary>
     /// Save changes to the database

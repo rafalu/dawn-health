@@ -38,6 +38,7 @@ public class AccelerationMeasurementController : ControllerBase
         var bulkId = Guid.NewGuid();
 
         //TODO: off-load the work to a background job (ideally, this should be done in a separate service)
+        //TODO: To avoid loosing data (unexpected crash or simple service restart), consider using a message queue (e.g. RabbitMQ, Azure Service Bus, etc.)
         _jobStatus[bulkId] = new BulkStatusResponse
         {
             BulkId = bulkId,

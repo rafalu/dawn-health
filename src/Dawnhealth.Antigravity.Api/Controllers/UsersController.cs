@@ -14,15 +14,13 @@ namespace Dawnhealth.Antigravity.Api.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly ILogger<UsersController> _logger;
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly RoleManager<ApplicationUser> _roleManager;
+    private readonly IUserService _userService;
     private readonly IActivationCodeService _activationCodeService;
 
-    public UsersController(ILogger<UsersController> logger, UserManager<ApplicationUser> userManager, RoleManager<ApplicationUser> roleManager, IActivationCodeService activationCodeService)
+    public UsersController(ILogger<UsersController> logger, IUserService userService, UserManager<ApplicationUser> userManager, RoleManager<ApplicationUser> roleManager, IActivationCodeService activationCodeService)
     {
         _logger = logger;
-        _userManager = userManager;
-        _roleManager = roleManager;
+        _userService = userService;
         _activationCodeService = activationCodeService;
     }
 
@@ -36,50 +34,34 @@ public class UsersController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        var result = await _userManager.CreateAsync(new ApplicationUser
+        var user = new ApplicationUser
         {
             FirstName = request.FirstName,
             LastName = request.LastName,
             Email = request.Email,
             UserName = request.Email
-        },
-        request.Password);
+        };
 
-        if (!result.Succeeded)
+        try
         {
-            return BadRequest(result.Errors);
+            var result = await _userService.CreateAsync(user, request.Password);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
+
         }
-
-        //assign user TestSubject role
-        var user = await _userManager.FindByEmailAsync(request.Email);
-        if (user == null) //this should never happen
+        catch (InvalidOperationException ex)
         {
-            //scramble email address for logging
-            string email = ScrambleEmail(request);
-
-            _logger.LogError("User {email} not found after creation", email);
-
-            ModelState.AddModelError(nameof(request.Email), "User not found after creation");
-
-            return BadRequest(ModelState);
-        }
-
-        result = await _userManager.AddToRoleAsync(user, "TestSubject");
-        if (!result.Succeeded)
-        {
-            _logger.LogWarning("Failed to assign role to user {user}", user.Id);
-
-            return BadRequest(result.Errors);
+            _logger.LogError(ex, "Failed to create user.");
+            return StatusCode(500);
         }
 
         return Created();
-
-        static string ScrambleEmail(UserSignUpRequest request) => $"{request.Email[0]}***{request.Email[^1]}@***.com";
     }
 
     private Task<bool> ValidateActivationCode(UserSignUpRequest request)
     {
         return _activationCodeService.VerifyCodeAsync(request.ActivationCode, request.Email);
     }
-
 }

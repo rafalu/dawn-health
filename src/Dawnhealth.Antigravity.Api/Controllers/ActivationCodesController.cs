@@ -32,7 +32,7 @@ public class ActivationCodesController : ControllerBase
 
         //TODO: Create a generic exception handler with a user-friendly message
 
-        var code = await _activationCodeService.GenerateCodeAsync(adminUserId.Value, request.Email);
+        var code = await _activationCodeService.GenerateCodeAsync(adminUserId, request.Email);
         return Ok(code);
     }
 }

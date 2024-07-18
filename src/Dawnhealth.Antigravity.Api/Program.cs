@@ -1,5 +1,8 @@
 using System.Text;
 
+using Dawnhealth.Antigravity.Domain.Users;
+
+using Downhealth.Antigravity.Infrastructure;
 using Downhealth.Antigravity.Infrastructure.Middleware;
 using Downhealth.Antigravity.Infrastructure.Seed;
 
@@ -17,6 +20,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddMemoryCache();
+
+builder.Services.AddDbContext<ApplicationDbContext>();
+
+builder.Services
+    .AddIdentity<ApplicationUser, ApplicationRole>();
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
