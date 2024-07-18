@@ -6,7 +6,7 @@ public interface IActivationCodeRepository
 {
     Task CreateAsync(ActivationCode activationCode);
 
-    Task<ActivationCode?> GetAsync(int userId, int code);
+    Task<ActivationCode?> GetAsync(int code, string email);
 
     Task SaveChangesAsync();
 }

@@ -4,6 +4,6 @@ namespace Dawnhealth.Antigravity.Domain.Public;
 
 public class ActivationCodeCreateRequest
 {
-    [Range(1, int.MaxValue)]
-    public int UserId { get; set; }
+    [DataType(DataType.EmailAddress)]
+    public required string Email { get; set; }
 }

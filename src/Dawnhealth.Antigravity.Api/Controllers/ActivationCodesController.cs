@@ -1,4 +1,3 @@
-using Dawnhealth.Antigravity.Domain;
 using Dawnhealth.Antigravity.Domain.Extensions;
 using Dawnhealth.Antigravity.Domain.Public;
 using Dawnhealth.Antigravity.DomainServices;
@@ -37,21 +36,7 @@ public class ActivationCodesController : ControllerBase
 
         //TODO: Create a generic exception handler with a user-friendly message
 
-        var code = await _activationCodeService.GenerateCodeAsync(adminUserId.Value, request.UserId);
+        var code = await _activationCodeService.GenerateCodeAsync(adminUserId.Value, request.Email);
         return Ok(code);
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<ActivationCode>> VerifyAsync([FromRoute] int code)
-    {
-        var userId = User.GetUserId();
-        if (userId == null)
-        {
-            return Unauthorized();
-        }
-
-        var success = await _activationCodeService.VerifyCodeAsync(userId.Value, code);
-
-        return Ok(new { success });
     }
 }

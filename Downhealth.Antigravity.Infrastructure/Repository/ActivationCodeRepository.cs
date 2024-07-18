@@ -27,18 +27,13 @@ public class ActivationCodeRepository : IActivationCodeRepository
     /// <summary>
     /// Get an activation code by user id and code
     /// </summary>
-    /// <param name="userId">User id</param>
     /// <param name="code">Code to verify</param>
     /// <returns>If the activation code exists, return the activation code; otherwise, return null</returns>
-    public Task<ActivationCode?> GeAsync(int userId, int code) =>
+    public Task<ActivationCode?> GeAsync(int code, string email) =>
         _context
             .ActivationCodes
-            .FirstOrDefaultAsync(x => x.UserId == userId && x.Code == code);
+            .FirstOrDefaultAsync(x => x.Code == code && x.AssignedToEmail == email);
 
-    public Task<ActivationCode?> GetAsync(int userId, int code)
-    {
-        throw new NotImplementedException();
-    }
 
     /// <summary>
     /// Save changes to the database

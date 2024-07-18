@@ -1,6 +1,7 @@
 ﻿using Dawnhealth.Antigravity.Domain;
 using Dawnhealth.Antigravity.DomainServices.Repository;
 
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
 namespace Dawnhealth.Antigravity.DomainServices;
@@ -10,33 +11,40 @@ public class ActivationCodeService : IActivationCodeService
     private readonly ILogger<ActivationCodeService> _logger;
     private readonly IRandomNumberGenerator _randomNumberGenerator;
     private readonly IActivationCodeRepository _repository;
+    private readonly ILookupNormalizer _lookupNormalizer;
 
-    public ActivationCodeService(ILogger<ActivationCodeService> logger, IRandomNumberGenerator randomNumberGenerator, IActivationCodeRepository repository)
+    public ActivationCodeService(ILogger<ActivationCodeService> logger, IRandomNumberGenerator randomNumberGenerator, IActivationCodeRepository repository, ILookupNormalizer lookupNormalizer)
     {
         _logger = logger;
         _randomNumberGenerator = randomNumberGenerator;
         _repository = repository;
+        _lookupNormalizer = lookupNormalizer;
     }
 
     /// <summary>
     /// Generates a unique 6-digit code for the user
     /// </summary>
     /// <returns>Returns the generated code</returns>
-    public async Task<int> GenerateCodeAsync(int adminUserId, int activationCodeUserId)
+    public async Task<int> GenerateCodeAsync(int adminUserId, string email)
     {
-        _logger.LogInformation("Generating activation code for user {userId} by admin {adminId}", activationCodeUserId, adminUserId);
+        _logger.LogInformation("Generating activation code by admin {adminId}", adminUserId);
+
+        // normalize the email
+        var normalizedEmail = _lookupNormalizer.NormalizeEmail(email);
 
         // the length can be configured via appsettings
         int code = _randomNumberGenerator.Generate(6);
         var activationCode = new ActivationCode
         {
             Code = code,
+            AssignedToEmail = normalizedEmail,
             IsUsed = false,
-            UserId = activationCodeUserId,
             ExpiryDate = DateTimeOffset.UtcNow.AddMinutes(1), // 1 minute, can be configured via appsettings for example
             CreatedAt = DateTimeOffset.UtcNow,
             CreatedBy = adminUserId
         };
+
+        //TODO: make sure the same email address does not have multiple active activation codes
 
         await _repository.CreateAsync(activationCode);
 
@@ -46,16 +54,17 @@ public class ActivationCodeService : IActivationCodeService
     /// <summary>
     /// Verifies the code for the user
     /// <param name="code"/>The code to verify</param>
-    /// <param name="userId">User ID</param>
     /// <returns>Returns true if the code is valid, false otherwise</returns></returns>
-    public async Task<bool> VerifyCodeAsync(int userId, int code)
+    public async Task<bool> VerifyCodeAsync(int code, string email)
     {
-        _logger.LogInformation("Verifying code {code} for user {userId}", code, userId);
+        _logger.LogInformation("Verifying code {code}", code);
 
-        var activationCode = await _repository.GetAsync(userId, code);
+        var normalizedEmail = _lookupNormalizer.NormalizeEmail(email);
+
+        var activationCode = await _repository.GetAsync(code, normalizedEmail);
         if (activationCode == null)
         {
-            _logger.LogWarning("Activation code not found for user {userId} and code {code}", userId, code);
+            _logger.LogWarning("Activation code not found for user and code {code}", code);
             return false;
         }
 
@@ -73,7 +82,6 @@ public class ActivationCodeService : IActivationCodeService
 
         activationCode.IsUsed = true;
         activationCode.ModifiedAt = DateTimeOffset.UtcNow;
-        activationCode.ModifiedBy = userId;
 
         await _repository.SaveChangesAsync();
 
