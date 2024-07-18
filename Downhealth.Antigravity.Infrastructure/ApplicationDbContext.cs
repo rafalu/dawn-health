@@ -11,6 +11,8 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<ActivationCode> ActivationCodes { get; set; }
 
+    public DbSet<AccelerationMeasurement> AccelerationMeasurements { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseSqlite("Data Source=demo.db");

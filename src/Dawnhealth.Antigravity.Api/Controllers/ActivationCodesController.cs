@@ -29,10 +29,6 @@ public class ActivationCodesController : ControllerBase
             return Forbid();
         }
         var adminUserId = User.GetUserId();
-        if (adminUserId == null)
-        {
-            return Unauthorized();
-        }
 
         //TODO: Create a generic exception handler with a user-friendly message
 
