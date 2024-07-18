@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Dawnhealth.Antigravity.DomainServices\Dawnhealth.Antigravity.DomainServices.csproj" />
+    <ProjectReference Include="..\Dawnhealth.Antigravity.DomainServices\Dawnhealth.Antigravity.DomainServices.csproj" />
   </ItemGroup>
 
 </Project>

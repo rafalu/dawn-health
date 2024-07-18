@@ -12,8 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Dawnhealth.Antigravity.Domain.Public\Dawnhealth.Antigravity.Domain.Public.csproj" />
-    <ProjectReference Include="..\..\Downhealth.Antigravity.Infrastructure\Downhealth.Antigravity.Infrastructure.csproj" />
+    <ProjectReference Include="..\Dawnhealth.Antigravity.Domain.Public\Dawnhealth.Antigravity.Domain.Public.csproj" />
+    <ProjectReference Include="..\Dawnhealth.Antigravity.DomainServices\Dawnhealth.Antigravity.DomainServices.csproj" />
+    <ProjectReference Include="..\Downhealth.Antigravity.Infrastructure\Downhealth.Antigravity.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
