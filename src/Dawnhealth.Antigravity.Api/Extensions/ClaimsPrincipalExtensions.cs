@@ -4,11 +4,12 @@ namespace Dawnhealth.Antigravity.Domain.Extensions;
 
 public static class ClaimsPrincipalExtensions
 {
-    public static int? GetUserId(this ClaimsPrincipal principal)
+    public static int GetUserId(this ClaimsPrincipal principal)
     {
         var value = principal.FindFirstValue(ClaimTypes.NameIdentifier);
         if (int.TryParse(value, out var userId))
             return userId;
-        return null;
+
+        throw new UnauthorizedAccessException("User is not authenticated");
     }
 }

@@ -15,6 +15,7 @@ public class UserSignUpRequest
     public required string LastName { get; set; }
 
     [Required]
+    [MaxLength(256)]
     [DataType(DataType.EmailAddress)]
     public required string Email { get; set; }
 

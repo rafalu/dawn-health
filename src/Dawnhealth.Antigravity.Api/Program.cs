@@ -1,5 +1,6 @@
 using System.Text;
 
+using Downhealth.Antigravity.Infrastructure.Middleware;
 using Downhealth.Antigravity.Infrastructure.Seed;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -70,6 +71,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<UnauthorizedAccessExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
 
 app.UseRouting();
