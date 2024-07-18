@@ -7,11 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Dawnhealth.Antigravity.DomainServices\Dawnhealth.Antigravity.DomainServices.csproj" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.7" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Repository\" />
+    <ProjectReference Include="..\src\Dawnhealth.Antigravity.DomainServices\Dawnhealth.Antigravity.DomainServices.csproj" />
   </ItemGroup>
 
 </Project>
