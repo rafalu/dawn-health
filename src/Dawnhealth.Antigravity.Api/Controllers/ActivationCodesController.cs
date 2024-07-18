@@ -22,15 +22,10 @@ public class ActivationCodesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GenerateCodeAsync([FromBody] ActivationCodeCreateRequest request)
     {
-        if (!User.IsInRole("Admin"))
-        {
-            return Forbid();
-        }
         var adminUserId = User.GetUserId();
-
-        //TODO: Create a generic exception handler with a user-friendly message
 
         var code = await _activationCodeService.GenerateCodeAsync(adminUserId, request.Email);
         return Ok(code);
