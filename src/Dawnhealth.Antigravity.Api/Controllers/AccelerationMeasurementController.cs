@@ -54,13 +54,13 @@ public class AccelerationMeasurementController : ControllerBase
         });
 
         // return the status as soon as possible, not to block the client
-        Request.Headers.Location = Url.Action("GetBulkCreateStatus", new { id = bulkId });
+        Request.Headers.Location = Url.Action(nameof(GetBulkCreateStatus), new { id = bulkId });
         return Accepted();
     }
 
 
     [HttpGet("status/{id}")]
-    public IActionResult GetBulkCreateStatus(Guid id)
+    public IActionResult GetBulkCreateStatus([FromRoute] Guid id)
     {
         if (_jobStatus.TryGetValue(id, out var status))
             return Ok(status);
